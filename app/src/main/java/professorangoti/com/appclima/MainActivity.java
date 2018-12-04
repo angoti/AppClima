@@ -1,11 +1,13 @@
 package professorangoti.com.appclima;
 
+import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void consulta(View v) {
-
+        escondeTeclado();
         mProgreesBar.setVisibility(View.VISIBLE);
 
         double latitude = 0, longitude = 0;
@@ -63,13 +65,13 @@ public class MainActivity extends AppCompatActivity {
                 mLongitudeEditText.getText().length() != 0) {
             latitude = Double.parseDouble(mLatitudeEditText.getText().toString());
             longitude = Double.parseDouble(mLongitudeEditText.getText().toString());
-            nomeCidade="";
+            nomeCidade = "";
         } else if ((mLatitudeEditText.getText().length() == 0 | mLongitudeEditText.getText().length() == 0) &&
                 mNomeCidade.getText().length() != 0) {
             LatLng ll = getLatLng(mNomeCidade.getText().toString());
             latitude = ll.getLatitude();
             longitude = ll.getLongitude();
-            nomeCidade=mNomeCidade.getText().toString();
+            nomeCidade = mNomeCidade.getText().toString();
             if (latitude == 0.0 || longitude == 0) {
                 mProgreesBar.setVisibility(View.INVISIBLE);
                 timezone.setText("Cidade não encontrada");
@@ -143,6 +145,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    void escondeTeclado() {
+        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
     private void limpaCampos() {
         mLatitudeEditText.getText().clear();
         mLongitudeEditText.getText().clear();
@@ -185,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return retorno;
     }
+
 
     private class LatLng {
         double latitude;
