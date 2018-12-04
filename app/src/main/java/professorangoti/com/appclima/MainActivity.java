@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText mNomeCidade;
     private TextView mDadosJson;
     private ProgressBar mProgreesBar;
+    private String nomeCidade;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,35 +44,44 @@ public class MainActivity extends AppCompatActivity {
         timezone = (TextView) findViewById(R.id.timezoneTextView);
         mProgreesBar = (ProgressBar) findViewById(R.id.progressBar);
         mProgreesBar.setVisibility(View.INVISIBLE);
-    }
 
-    public void consulta(View v) {
-        mProgreesBar.setVisibility(View.VISIBLE);
         mLatitudeEditText = (EditText) findViewById(R.id.latitudeEditText);
         mLongitudeEditText = (EditText) findViewById(R.id.longitudeEditText);
         mNomeCidade = (EditText) findViewById(R.id.nomeCidadeEditText);
         mDadosJson = (TextView) findViewById(R.id.respostaJSONTextView);
+
+        limpaCampos();
+    }
+
+    public void consulta(View v) {
+
+        mProgreesBar.setVisibility(View.VISIBLE);
+
         double latitude = 0, longitude = 0;
         if (mNomeCidade.getText().toString().length() == 0 &&
                 mLatitudeEditText.getText().length() != 0 &&
                 mLongitudeEditText.getText().length() != 0) {
             latitude = Double.parseDouble(mLatitudeEditText.getText().toString());
             longitude = Double.parseDouble(mLongitudeEditText.getText().toString());
+            nomeCidade="";
         } else if ((mLatitudeEditText.getText().length() == 0 | mLongitudeEditText.getText().length() == 0) &&
-                mNomeCidade.getText().length() > 0) {
+                mNomeCidade.getText().length() != 0) {
             LatLng ll = getLatLng(mNomeCidade.getText().toString());
             latitude = ll.getLatitude();
             longitude = ll.getLongitude();
+            nomeCidade=mNomeCidade.getText().toString();
             if (latitude == 0.0 || longitude == 0) {
                 mProgreesBar.setVisibility(View.INVISIBLE);
                 timezone.setText("Cidade não encontrada");
                 mDadosJson.setText("");
                 imagem.setImageResource(R.drawable.naoencontrado);
+                limpaCampos();
                 return;
             }
         } else {
             Toast.makeText(this, "Preencha os campos corretamente", Toast.LENGTH_SHORT).show();
             mProgreesBar.setVisibility(View.INVISIBLE);
+            limpaCampos();
             return;
         }
         limpaCampos();
@@ -123,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                         imagem.setImageResource(R.drawable.naoencontrado);
                         break;
                 }
-                timezone.setText(getNomeCidade(latitudefinal, longitudefinal));
+                timezone.setText(nomeCidade.length() != 0 ? nomeCidade : getNomeCidade(latitudefinal, longitudefinal));
             }
 
             @Override
